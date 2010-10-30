@@ -1,0 +1,28 @@
+Entities:
+	@uuid....		unique uuid
+	@identiy....	part of the identity
+	@lazy....		lazy initialization
+	@transient...	transient properties
+
+Factory:
+	countBy
+	onNotFound
+
+Aspects:
+
+
+
+XSD Object Binding
+	http://www.edition-w3.de/TR/2001/REC-xmlschema-0-20010502/
+
+
+Review view helper: normalizeTypeArg etc. -> merge them to one view helper, rename...
+
+Support multiple entity types:
+	simple entity
+	single transaction entity
+	transactional entity
+
+
+Manual
+	

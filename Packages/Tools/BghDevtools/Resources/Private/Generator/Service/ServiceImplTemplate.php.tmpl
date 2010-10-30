@@ -1,0 +1,84 @@
+<?php
+declare(ENCODING = 'utf-8');
+namespace F3\{packageKey}<f:if condition="{isInSubpackage}">\{subpackage}</f:if>\Service<f:if condition="{isInNamespace}">\{namespace}</f:if>;
+{namespace bgh=F3\BghModelTools\ViewHelpers}
+// {generatedInfo}
+
+/*                                                                        *
+<f:format.padding padLength="74"> * This script belongs to the FLOW3 package "{packageKey}".</f:format.padding>*
+ *                                                                        *
+ * It is free software; you can redistribute it and/or modify it under    *
+ * the terms of the GNU Lesser General Public License as published by the *
+ * Free Software Foundation, either version 3 of the License, or (at your *
+ * option) any later version.                                             *
+ *                                                                        *
+ * This script is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHAN-    *
+ * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser       *
+ * General Public License for more details.                               *
+ *                                                                        *
+ * You should have received a copy of the GNU Lesser General Public       *
+ * License along with the script.                                         *
+ * If not, see http://www.gnu.org/licenses/lgpl.html                      *
+ *                                                                        *
+ * The TYPO3 project - inspiring people to share!                         *
+ *                                                                        */
+
+<bgh:section name="preclass">
+</bgh:section>
+
+/**
+ * {serviceName} class for the {packageKey} package <f:if condition="{isInSubpackage}"> and subpackage {subpackage}</f:if>
+ *
+ * {serviceDocumentation}
+ *
+ * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License, version 3 or later
+ */
+class {serviceClassName} implements \F3\{packageKey}<f:if condition="{isInSubpackage}">\{subpackage}</f:if>\Service<f:if condition="{isInNamespace}">\{namespace}</f:if>\{serviceClassName}Interface
+{
+
+    <bgh:section name="inclass">
+    </bgh:section>
+    
+    <f:for each="{serviceMethods}" as="method">
+    /**
+     * {method.documentation}<f:for each="{method.visibleArgs}" as="arg" key="key"><f:if condition="{key} == 0">
+     * </f:if>
+     * @param <bgh:normalizeTypeEx type="{arg.type}" thisPackage="Service" /> ${arg.name} {arg.documentation}</f:for>
+     * 
+     * @return <bgh:normalizeTypeEx type="{method.return.type}" thisPackage="Service" /> {method.return.documentation}<f:for each="{method.throws}" as="throw" key="key="><f:if condition="{key} == 0">
+     * </f:if>
+     * @throws <bgh:normalizeTypeEx type="{throw.type}" thisPackage="Service" /> {throw.documentation}</f:for>
+     */
+    public function {method.name}(<f:for each="{method.visibleArgs}" as="arg" key="key"><f:if condition="{key} > 0">, </f:if><bgh:normalizeTypeArgEx type="{arg.type}" thisPackage="Service" /> ${arg.name}</f:for>)
+    {<f:for each="{method.args}" as="arg"><f:if condition="{arg.shadowed}">
+        ${arg.name} = {arg.value};</f:if></f:for><f:if condition="{method.hasTryCatch}"><f:then>
+        try
+        {
+            <bgh:section name="method-{method.name}">
+            // TODO auto generated code
+            return null;
+            </bgh:section>
+        }<f:for each="{method.tryCatches}" as="tc"><f:if condition="{tc.userCode}"><f:then>
+        catch (<bgh:normalizeTypeEx type="{tc.class}" thisPackage="Service" /> $_ex)
+        {
+            <bgh:section name="method-{method.name}-{tc.class}">
+            // TODO auto generated code
+            return null;
+            </bgh:section>
+        }</f:then><f:else><f:if condition="{tc.map}"><f:then>
+        catch (<bgh:normalizeTypeEx type="{tc.from}" thisPackage="Service" /> $_ex)
+        {
+            throw new <bgh:normalizeTypeEx type="{tc.to}" thisPackage="Service" />($_ex->getMessage(), $_ex->getCode(), $_ex);
+        }</f:then><f:else>NOT SUPPORTED!</f:else></f:if></f:else></f:if></f:for></f:then><f:else><f:if condition="{method.usercode}"><f:then>
+        <bgh:section name="method-{method.name}">
+        // TODO auto generated code
+        return null;
+        </bgh:section></f:then><f:else>
+        NOT SUPPORTED!</f:else></f:if></f:else></f:if>
+    }</f:for>
+	
+}
+
+<bgh:section name="postclass">
+</bgh:section>

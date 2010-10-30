@@ -1,0 +1,133 @@
+<?php
+declare(ENCODING = 'utf-8');
+namespace F3\{packageKey}<f:if condition="{isInSubpackage}">\{subpackage}</f:if>\Domain<f:if condition="{isInNamespace}">\{namespace}</f:if>\Model\Impl;
+{namespace bgh=F3\BghModelTools\ViewHelpers}
+// {generatedInfo}
+
+/*                                                                        *
+<f:format.padding padLength="74"> * This script belongs to the FLOW3 package "{packageKey}".</f:format.padding>*
+ *                                                                        *
+ * It is free software; you can redistribute it and/or modify it under    *
+ * the terms of the GNU Lesser General Public License as published by the *
+ * Free Software Foundation, either version 3 of the License, or (at your *
+ * option) any later version.                                             *
+ *                                                                        *
+ * This script is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHAN-    *
+ * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser       *
+ * General Public License for more details.                               *
+ *                                                                        *
+ * You should have received a copy of the GNU Lesser General Public       *
+ * License along with the script.                                         *
+ * If not, see http://www.gnu.org/licenses/lgpl.html                      *
+ *                                                                        *
+ * The TYPO3 project - inspiring people to share!                         *
+ *                                                                        */
+
+<bgh:section name="preclass">
+</bgh:section>
+
+/**
+ * {entityName} class for the {packageKey} package <f:if condition="{isInSubpackage}"> and subpackage {subpackage}</f:if>
+ *
+ * {entityDocumentation}
+ *
+ * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License, version 3 or later
+ * @entity
+ * @scope prototype
+ */
+class {entityClassName} extends \F3\BghObjects\Lib\Model\Entity implements \F3\{packageKey}<f:if condition="{isInSubpackage}">\{subpackage}</f:if>\Domain<f:if condition="{isInNamespace}">\{namespace}</f:if>\Model\{entityClassName}Interface
+{
+
+    <bgh:section name="inclass">
+    </bgh:section>
+    <f:for each="{entityAttributes}" as="attribute"><f:if condition="{attribute.uuid}"><f:then>
+    /**
+     * Getter for attribut {attribute.name}
+     *
+     * {attribute.documentation}
+     *
+     * @return <bgh:normalizeType type="{attribute.type}" /> return value
+     */
+    public function <bgh:entityGetter attribute="{attribute}" />()
+    {
+        return $this->FLOW3_Persistence_Entity_UUID;
+    }</f:then><f:else>
+    /**
+     * The attribute {attribute.name}
+     *
+     * {attribute.documentation}
+     *
+     * @var <bgh:normalizeType type="{attribute.type}" />
+     */
+    protected $_{attribute.name};
+    
+    /**
+     * Getter for attribut {attribute.name}
+     *
+     * {attribute.documentation}
+     *
+     * @return <bgh:normalizeType type="{attribute.type}" /> return value
+     */
+    public function <bgh:entityGetter attribute="{attribute}" />()
+    {
+        <bgh:section name="get-{attribute.name}">
+        $result = $this->getProperty('{attribute.name}');
+        </bgh:section>
+        return $result;
+    }
+    
+    /**
+     * Setter for attribut {attribute.name}
+     *
+     * {attribute.documentation}
+     *
+     * @param <bgh:normalizeType type="{attribute.type}" /> $newValue new value
+     */
+    public function <bgh:entitySetter attribute="{attribute}" />(<bgh:normalizeTypeArg type="{attribute.type}" /> $newValue)
+    {<f:if condition="{attribute.translate}">
+        $newValue = $this-><bgh:entityTranslator attribute="{attribute}" />($newValue);</f:if><f:if condition="{attribute.validate}">
+        $this-><bgh:entityValidator attribute="{attribute} />($newValue);</f:if>
+        $this->setProperty('{attribute.name}', $newValue);<f:if condition="{attribute.postProcessing}">
+        $this-><bgh:entityPostProcessor attribute="{attribute}" />();</f:if>
+    }<f:if condition="{attribute.translate}">
+    
+    /**
+     * translate newValue of attribute {attribute.name}
+     *
+     * @param <bgh:normalizeType type="{attribute.type}" /> $newValue new value
+     *
+     * @return <bgh:normalizeType type="{attribute.type}" /> the translated value
+     */
+    private function <bgh:entityTranslator attribute="{attribute}" />(<bgh:normalizeTypeArg type="{attribute.type}" /> $newValue)
+    {
+        <bgh:section name="translate-{attribute.name}">
+        return $newValue;
+        </bgh:section>
+    }</f:if><f:if condition="{attribute.validate}">
+    
+    /**
+     * validate newValue of attribute {attribute.name}
+     *
+     * @param <bgh:normalizeType type="{attribute.type}" /> $newValue new value
+     */
+    private function <bgh:entityValidator attribute="{attribute}" />(<bgh:normalizeTypeArg type="{attribute.type}" /> $newValue)
+    {
+        <bgh:section name="validate-{attribute.name}">
+        </bgh:section>
+    }</f:if><f:if condition="{attribute.postProcessing}">
+    
+    /**
+     * attribute {attribute.name} changed
+     */
+    private function <bgh:entityPostProcessor attribute="{attribute}" />()
+    {
+        <bgh:section name="changed-{attribute.name}">
+        </bgh:section>
+    }</f:if></f:else></f:if>
+    </f:for>
+	
+}
+
+<bgh:section name="postclass">
+</bgh:section>
