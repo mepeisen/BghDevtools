@@ -113,7 +113,7 @@ class CliProjectController extends \F3\FLOW3\MVC\Controller\ActionController
 		$this->checkBuildpath($file, $basePath);
 		
 		// 2) Existance of .settings/.jsdtscope
-		$this->createFile("$basePath/.settings/jsdtscope",
+		$this->createFile("$basePath/.settings/.jsdtscope",
 		    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".
 		    "<classpath>\n".
 		    "	<classpathentry kind=\"src\" path=\"\"/>\n".
@@ -127,8 +127,8 @@ class CliProjectController extends \F3\FLOW3\MVC\Controller\ActionController
 		    "	<classpathentry kind=\"output\" path=\"\"/>\n".
 		    "</classpath>");
 		
-		// 3) Existance of .settings/org.eclipse.core.resource.prefs
-		$this->createFile("$basePath/.settings/org.eclipse.core.resource.prefs", "eclipse.preferences.version=1\nencoding/<project>=UTF-8");
+		// 3) Existance of .settings/org.eclipse.core.resources.prefs
+		$this->createFile("$basePath/.settings/org.eclipse.core.resources.prefs", "eclipse.preferences.version=1\nencoding/<project>=UTF-8");
 		
 		// 4) Existance of .settings/org.eclipse.core.runtime.prefs
 		$this->createFile("$basePath/.settings/org.eclipse.core.runtime.prefs", "eclipse.preferences.version=1\nline.separator=\\n");
@@ -558,24 +558,25 @@ class CliProjectController extends \F3\FLOW3\MVC\Controller\ActionController
 	            }
 		    }
 		    $projects = $this->projectSummary;
+		    $projects['com_bghosting_flow3_devfwkflow3'] = true;
 		    $changed = false;
-		    $includes = "2;/com_bghosting_flow3_devfwkflow3";
+		    $includes = '';
 		    $woincludes = $content;
-		    $incpos = strpos('include_path=', $content);
+		    $incpos = strpos($content, 'include_path=');
 		    if ($incpos !== false)
 		    {
-		        $elpos = strpos("\n", $content, $incpos);
+		        $elpos = strpos($content, "\n", $incpos);
 		        if ($elpos !== false)
 		        {
-		            $includes = substr($content, $incpos + 13, $elpos);
-		            $woincludes = substr($content, 0, $incpos) . substr($content, $elpos);
+		            $includes = trim(substr($content, $incpos + 13, $elpos - $incpos - 13));
+		            $woincludes = trim(substr($content, 0, $incpos)) . "\n" . trim(substr($content, $elpos));
 		        }
 		        else
 		        {
-		            $includes = substr($content, $incpos + 13);
-		            $woincludes = substr($content, 0, $incpos)."\n";
+		            $includes = trim(substr($content, $incpos + 13));
+		            $woincludes = trim(substr($content, 0, $incpos))."\n";
 		        }
-		        $exploded = explode("\\u0005", trim($includes));
+		        $exploded = explode("\\u0005", $includes);
 		        foreach ($exploded as $exp)
 		        {
 		            $parts = explode(";", $exp);
@@ -584,18 +585,18 @@ class CliProjectController extends \F3\FLOW3\MVC\Controller\ActionController
 		                case '0':
 		                    $path = $parts[1];
 		                    $result = array();
-		                    if (preg_match("/^\/$prjname\/Packages\/(?P<Pkg>[^\/]+)\/(?P<Mod>[^\/]+)\/Classes$/", $path, $result))
+		                    if (preg_match("/^\/$projectname\/Packages\/(?P<Pkg>[^\/]+)\/(?P<Mod>[^\/]+)\/Classes$/", $path, $result))
 		                    {
 		                        if (isset($modulesClasses[$result['Pkg']][$result['Mod']])) unset($modulesClasses[$result['Pkg']][$result['Mod']]);
 		                    }
-		                    elseif (preg_match("/^\/$prjname\/Packages\/(?P<Pkg>[^\/]+)\/(?P<Mod>[^\/]+)\/Tests$/", $path, $result))
+		                    elseif (preg_match("/^\/$projectname\/Packages\/(?P<Pkg>[^\/]+)\/(?P<Mod>[^\/]+)\/Tests$/", $path, $result))
 		                    {
 		                        if (isset($modulesTests[$result['Pkg']][$result['Mod']])) unset($modulesTests[$result['Pkg']][$result['Mod']]);
 		                    }
 		                    break;
 		                case '2':
-		                    $prjname = substr($parts[1], 1);
-		                    if (isset($projects[$prjname])) unset($projects[$prjname]);
+		                    $nam = substr($parts[1], 1);
+		                    if (isset($projects[$nam])) unset($projects[$nam]);
 		                    break;
 		            }
 		        }
@@ -604,14 +605,14 @@ class CliProjectController extends \F3\FLOW3\MVC\Controller\ActionController
 		    foreach ($projects as $prj => $v)
 		    {
 		        $changed = true;
-		        $includes .= "\u00052;/$prj";
+		        $includes .= "\\u00052;/$prj";
 		    }
 		    foreach ($modulesClasses as $pkg => $mods)
 		    {
 		        foreach ($mods as $mod => $v)
 		        {
 		            $changed = true;
-    		        $includes .= "\u00050;/$projectname/Packages/$pkg/$mod/Classes";
+    		        $includes .= "\\u00050;/$projectname/Packages/$pkg/$mod/Classes";
 		        }
 		    }
 		    foreach ($modulesTests as $pkg => $mods)
@@ -619,13 +620,15 @@ class CliProjectController extends \F3\FLOW3\MVC\Controller\ActionController
 		        foreach ($mods as $mod => $v)
 		        {
 		            $changed = true;
-    		        $includes .= "\u00050;/$projectname/Packages/$pkg/$mod/Tests";
+    		        $includes .= "\\u00050;/$projectname/Packages/$pkg/$mod/Tests";
 		        }
 		    }
 		    
+		    if (substr($includes, 0, 6) == "\\u0005") $includes = substr($includes, 6);
+		        
 		    if ($changed)
 		    {
-		        $this->createFile("$basePath/.settings/org.eclipse.php.core.prefs", $woincludes."include_path=$includes\n");
+		        $this->createFile("$basePath/.settings/org.eclipse.php.core.prefs", $woincludes."\ninclude_path=$includes\n", true);
 		    }
 		}
 	}
@@ -744,7 +747,7 @@ class CliProjectController extends \F3\FLOW3\MVC\Controller\ActionController
 		    }
 		    if ($changed)
 		    {
-		        $this->createFile("$basePath/.buildpath", $prjxml->asXML());
+		        $this->createFile("$basePath/.buildpath", $prjxml->asXML(), true);
 		    }
 		}
 	}
