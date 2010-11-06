@@ -23,87 +23,27 @@ namespace F3\BghDevtools\Domain\Model;
  *                                                                        */
 
 /**
- * Repository definition
+ * Entity key column definition
  *
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @scope prototype
  */
-class DomainRepository extends \F3\BghDevtools\Domain\NamedElement
+class DomainEntityKeyColumn extends \F3\BghDevtools\Domain\NamedElement
 {
 	
 	/**
-	 * @var boolean
+	 * @var array(string=>\F3\BghDevtools\Domain\Model\DomainEntityKeyColumnFilter)
 	 */
-	protected $generate = false;
+	protected $filters = array();
 	
 	/**
-	 * @var string
-	 */
-	protected $objectType = false;
-	
-	/**
-	 * @var array(string=>\F3\BghDevtools\Domain\Model\DomainRepositoryMethod)
-	 */
-	protected $methods = array();
-	
-	/**
-	 * @var string
-	 */
-	protected $type = false;
-	
-	/**
-	 * @var string
-	 */
-	const TYPE_TX = 'tx';
-	
-	/**
-	 * @var string
-	 */
-	const TYPE_SIMPLE = 'simple';
-	
-	/**
-	 * @var string
-	 */
-	const TYPE_STANDARD = 'standard';
-	
-	/**
-	 * Returns the type
+	 * Returns the filter
 	 * 
-	 * @return string
+	 * @return array(string=>\F3\BghDevtools\Domain\Model\DomainEntityKeyColumnFilter)
 	 */
-	public function getType()
+	public function getFilters()
 	{
-	    return $this->type;
-	}
-	
-	/**
-	 * Returns true if this is generated
-	 * 
-	 * @return boolean
-	 */
-	public function isGenerated()
-	{
-		return $this->generate;
-	}
-	
-	/**
-	 * Returns the object type
-	 * 
-	 * @return string
-	 */
-	public function getObjectType()
-	{
-		return $this->objectType;
-	}
-	
-	/**
-	 * Returns the methods
-	 * 
-	 * @return array(string=>\F3\BghDevtools\Domain\Model\DomainRepositoryMethod)
-	 */
-	public function getMethods()
-	{
-		return $this->methods;
+		return $this->$filters;
 	}
 	
 	/**
@@ -113,7 +53,7 @@ class DomainRepository extends \F3\BghDevtools\Domain\NamedElement
 	 */
 	protected function getElementName()
 	{
-		return 'Repository-Definition';
+		return 'Entity-Key-Column-Definition';
 	}
 	
 	/**
@@ -128,24 +68,6 @@ class DomainRepository extends \F3\BghDevtools\Domain\NamedElement
 	{
 		if (parent::applyAttribute($key, $val)) return true;
 		
-		if ($key == 'generate')
-		{
-			$this->generate = (boolean)$val;
-			return true;
-		}
-		
-		if ($key == 'objectType')
-		{
-			$this->objectType = $val;
-			return true;
-		}
-		
-		if ($key == 'type')
-		{
-		    $this->type = $val;
-		    return true;
-		}
-		
 		return false;
 	}
 	
@@ -159,26 +81,26 @@ class DomainRepository extends \F3\BghDevtools\Domain\NamedElement
 	protected function applyChild(\SimpleXmlElement $element)
 	{
 		if (parent::applyChild($element)) return true;
-		
-		if ($element->getName() == 'method')
+	
+		if ($element->getName() == 'filter')
 		{
 			try
 			{
-				$method = $this->objectManager->create('F3\BghDevtools\Domain\Model\DomainRepositoryMethod');
-				$method->parse($element);
-				if (isset($this->methods[$method->getName()]))
+				$filter = $this->objectManager->create('F3\BghDevtools\Domain\Model\DomainEntityKeyColumnFilter');
+				$filter->parse($element);
+				if (isset($this->filters[$filter->getName()]))
 				{
-					throw new \F3\BghDevtools\Domain\Model\Exception("Duplicate repository method for repository '".$this->getName()."': '".$method->getName()."'", 1286872285);
+					throw new \F3\BghDevtools\Domain\Model\Exception("Duplicate entity key column filter for column '".$this->getName()."': '".$filter->getName()."'", 1286874500);
 				}
-				$this->methods[$method->getName()] = $method;
+				$this->filters[$filter->getName()] = $filter;
 				return true;
 			}
 			catch (\F3\BghDevtools\Domain\Model\Exception $e)
 			{
-				throw new \F3\BghDevtools\Domain\Model\Exception("Error reading repository '".$this->getName()."'. Nested code: ".$e->getCode()." / Nested message: ".$e->getMessage(), 1286872288);
+				throw new \F3\BghDevtools\Domain\Model\Exception("Error reading entity column '".$this->getName()."'. Nested code: ".$e->getCode()." / Nested message: ".$e->getMessage(), 1286874501);
 			}
 		}
-
+		
 		return false;
 	}
 	
@@ -188,21 +110,6 @@ class DomainRepository extends \F3\BghDevtools\Domain\NamedElement
 	protected function validate()
 	{
 		parent::validate();
-		
-		if ($this->objectType === false)
-		{
-			throw new \F3\BghDevtools\Domain\Model\Exception("Error reading repository '".$this->getName()."'. Missing object type", 1286872284);
-		}
-		
-		if ($this->type === false)
-		{
-		    throw new \F3\BghDevtools\Domain\Model\Exception("Error reading repository '".$this->getName()."'. Missing type", 1286872284);
-		}
-		
-		if ($this->type !== self::TYPE_SIMPLE && $this->type !== self::TYPE_STANDARD && $this->type !== self::TYPE_TX)
-		{
-		    throw new \F3\BghDevtools\Domain\Model\Exception("Error reading repository '".$this->getName()."'. Unsupported type ".$this->type, 1286872284);
-		}
 	}
 	
 }

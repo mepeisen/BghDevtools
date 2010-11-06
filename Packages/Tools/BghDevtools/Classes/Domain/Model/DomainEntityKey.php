@@ -23,33 +23,14 @@ namespace F3\BghDevtools\Domain\Model;
  *                                                                        */
 
 /**
- * Entity definition
+ * Entity key definition
  *
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  * @scope prototype
  */
-class DomainEntity extends \F3\BghDevtools\Domain\NamedElement
+class DomainEntityKey extends \F3\BghDevtools\Domain\NamedElement
 {
 	
-    /**
-     * @var array(string=>\F3\BghDevtools\Domain\Model\DomainEntityKey)
-     */
-    protected $keys = array();
-    
-    /**
-     * Returns the declared keys
-     * @return array(string=>\F3\BghDevtools\Domain\Model\DomainEntityKey)
-     */
-    protected function getKeys()
-    {
-        return $this->keys;
-    }
-    
-	/**
-	 * @var boolean
-	 */
-	protected $generate = false;
-
 	/**
 	 * @var string
 	 */
@@ -58,17 +39,17 @@ class DomainEntity extends \F3\BghDevtools\Domain\NamedElement
 	/**
 	 * @var string
 	 */
-	const TYPE_TX = 'tx';
+	const TYPE_UNIQUE = 'unique';
 	
 	/**
 	 * @var string
 	 */
-	const TYPE_SIMPLE = 'simple';
+	const TYPE_USER = 'user';
 	
 	/**
 	 * @var string
 	 */
-	const TYPE_STANDARD = 'standard';
+	const TYPE_NONUNIQUE = 'nonunique';
 	
 	/**
 	 * Returns the type
@@ -81,28 +62,18 @@ class DomainEntity extends \F3\BghDevtools\Domain\NamedElement
 	}
 	
 	/**
-	 * Returns true if this is generated
-	 * 
-	 * @return boolean
+	 * @var array(string=>\F3\BghDevtools\Domain\Model\DomainEntityKeyColumn)
 	 */
-	public function isGenerated()
-	{
-		return $this->generate;
-	}
+	protected $columns = array();
 	
 	/**
-	 * @var array(string=>\F3\BghDevtools\Domain\Model\DomainEntityAttribute)
-	 */
-	protected $attributes = array();
-	
-	/**
-	 * Returns the attributes
+	 * Returns the columns
 	 * 
-	 * @return array(string=>\F3\BghDevtools\Domain\Model\DomainEntityAttribute)
+	 * @return array(string=>\F3\BghDevtools\Domain\Model\DomainEntityKeyColumn)
 	 */
-	public function getAttributes()
+	public function getColumns()
 	{
-		return $this->attributes;
+		return $this->columns;
 	}
 	
 	/**
@@ -112,7 +83,7 @@ class DomainEntity extends \F3\BghDevtools\Domain\NamedElement
 	 */
 	protected function getElementName()
 	{
-		return 'Entity-Definition';
+		return 'Entity-Key-Definition';
 	}
 	
 	/**
@@ -126,12 +97,6 @@ class DomainEntity extends \F3\BghDevtools\Domain\NamedElement
 	protected function applyAttribute($key, $val)
 	{
 		if (parent::applyAttribute($key, $val)) return true;
-		
-		if ($key == 'generate')
-		{
-			$this->generate = (boolean)$val;
-			return true;
-		}
 		
 		if ($key == 'type')
 		{
@@ -152,42 +117,23 @@ class DomainEntity extends \F3\BghDevtools\Domain\NamedElement
 	protected function applyChild(\SimpleXmlElement $element)
 	{
 		if (parent::applyChild($element)) return true;
-	
-		if ($element->getName() == 'attribute')
-		{
-			try
-			{
-				$attribute = $this->objectManager->create('F3\BghDevtools\Domain\Model\DomainEntityAttribute');
-				$attribute->parse($element);
-				if (isset($this->attributes[$attribute->getName()]))
-				{
-					throw new \F3\BghDevtools\Domain\Model\Exception("Duplicate entity attribute for entity '".$this->getName()."': '".$attribute->getName()."'", 1286874500);
-				}
-				$this->attributes[$attribute->getName()] = $attribute;
-				return true;
-			}
-			catch (\F3\BghDevtools\Domain\Model\Exception $e)
-			{
-				throw new \F3\BghDevtools\Domain\Model\Exception("Error reading entity '".$this->getName()."'. Nested code: ".$e->getCode()." / Nested message: ".$e->getMessage(), 1286874501);
-			}
-		}
 		
-		if ($element->getName() == 'key')
+		if ($element->getName() == 'column')
 		{
 			try
 			{
-				$key = $this->objectManager->create('F3\BghDevtools\Domain\Model\DomainEntityKey');
-				$key->parse($element);
-				if (isset($this->keys[$key->getName()]))
+				$col = $this->objectManager->create('F3\BghDevtools\Domain\Model\DomainEntityKeyColumn');
+				$col->parse($element);
+				if (isset($this->columns[$col->getName()]))
 				{
-					throw new \F3\BghDevtools\Domain\Model\Exception("Duplicate entity key for entity '".$this->getName()."': '".$key->getName()."'", 1286874500);
+					throw new \F3\BghDevtools\Domain\Model\Exception("Duplicate entity key column for key '".$this->getName()."': '".$col->getName()."'", 1286874500);
 				}
-				$this->keys[$key->getName()] = $key;
+				$this->columns[$col->getName()] = $col;
 				return true;
 			}
 			catch (\F3\BghDevtools\Domain\Model\Exception $e)
 			{
-				throw new \F3\BghDevtools\Domain\Model\Exception("Error reading entity '".$this->getName()."'. Nested code: ".$e->getCode()." / Nested message: ".$e->getMessage(), 1286874501);
+				throw new \F3\BghDevtools\Domain\Model\Exception("Error reading entity key '".$this->getName()."'. Nested code: ".$e->getCode()." / Nested message: ".$e->getMessage(), 1286874501);
 			}
 		}
 
@@ -203,12 +149,12 @@ class DomainEntity extends \F3\BghDevtools\Domain\NamedElement
 		
 		if ($this->type === false)
 		{
-		    throw new \F3\BghDevtools\Domain\Model\Exception("Error reading entity '".$this->getName()."'. Missing type", 1286872284);
+		    throw new \F3\BghDevtools\Domain\Model\Exception("Error reading entity key '".$this->getName()."'. Missing type", 1286872284);
 		}
 		
-		if ($this->type !== self::TYPE_SIMPLE && $this->type !== self::TYPE_STANDARD && $this->type !== self::TYPE_TX)
+		if ($this->type !== self::TYPE_NONUNIQUE && $this->type !== self::TYPE_UNIQUE && $this->type !== self::TYPE_USER)
 		{
-		    throw new \F3\BghDevtools\Domain\Model\Exception("Error reading entity '".$this->getName()."'. Unsupported type ".$this->type, 1286872284);
+		    throw new \F3\BghDevtools\Domain\Model\Exception("Error reading entity key '".$this->getName()."'. Unsupported type ".$this->type, 1286872284);
 		}
 	}
 	
