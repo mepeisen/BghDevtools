@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<xs:schema
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://schema.bghosting.com/flow3_devtools/common"
+	xmlns="http://schema.bghosting.com/flow3_devtools/common"
+	elementFormDefault="qualified">
+	
+	<xs:simpleType name="booleanType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="true" />
+			<xs:enumeration value="false" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="stringType">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	
+	<xs:simpleType name="identifierType">
+		<xs:restriction base="stringType">
+			<xs:pattern value="[a-zA-Z_][a-zA-Z0-9_]*"></xs:pattern>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="classNameType">
+		<xs:restriction base="identifierType" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="namespaceNameType">
+		<xs:restriction base="identifierType" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="domainNameType">
+		<xs:restriction base="identifierType" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="descriptionType">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	
+	<xs:simpleType name="nameType">
+		<xs:restriction base="identifierType"/>
+	</xs:simpleType>
+
+	<xs:complexType name="DescriptedElementType">
+		<xs:sequence><xs:element name="description" type="descriptionType" minOccurs="0" maxOccurs="1" /></xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="NamedElementType">
+		<xs:complexContent><xs:extension base="DescriptedElementType">
+			<xs:attribute name="name" type="nameType" use="required" />
+		</xs:extension></xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="ExceptionElementType">
+		<xs:complexContent><xs:extension base="NamedElementType"></xs:extension></xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="exception" type="ExceptionElementType" />
+</xs:schema>

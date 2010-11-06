@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<bindings package="BghDevtools">
+    <domain namespace="Common">
+    	<schema file="xmlbindings_common.xsd" />
+    </domain>
+    <domain namespace="Project">
+    	<schema file="xmlbindings_project.xsd" />
+    </domain>
+    <domain namespace="Model">
+    	<schema file="xmlbindings_model.xsd" />
+    </domain>
+    <domain namespace="Service">
+    	<schema file="xmlbindings_service.xsd" />
+    </domain>
+</bindings>

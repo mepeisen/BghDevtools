@@ -789,6 +789,7 @@ class CliProjectController extends \F3\FLOW3\MVC\Controller\ActionController
 	                $this->createFile("$modpath/Meta/Package.xml", $this->getContentOfPackageXml($mod));
                     $this->createFile("$modpath/Model/model.xml", $this->getContentOfModelXml($mod));
                     $this->createFile("$modpath/Model/service.xml", $this->getContentOfServiceXml($mod));
+                    $this->createFile("$modpath/Model/xmlbindings.xml", $this->getContentOfXmlbindingsXml($mod));
 	            }
 	            else
 	            {
@@ -808,6 +809,7 @@ class CliProjectController extends \F3\FLOW3\MVC\Controller\ActionController
                     $this->createFile("$modpath/Meta/Package.xml", $this->getContentOfPackageXml($mod));
                     $this->createFile("$modpath/Model/model.xml", $this->getContentOfModelXml($mod));
                     $this->createFile("$modpath/Model/service.xml", $this->getContentOfServiceXml($mod));
+                    $this->createFile("$modpath/Model/xmlbindings.xml", $this->getContentOfXmlbindingsXml($mod));
 	            }
 	        }
 		}
@@ -861,6 +863,22 @@ class CliProjectController extends \F3\FLOW3\MVC\Controller\ActionController
                "    <domain namespace=\"\">\n".
                "    </domain>\n".
                "</service>";
+	}
+	
+	/**
+	 * Returns the content of xmlbindings xml file
+	 * 
+	 * @param \F3\BghDevtools\Domain\Project\PackageModule $mod
+	 * 
+	 * @return string
+	 */
+	protected function getContentOfXmlbindingsXml(\F3\BghDevtools\Domain\Project\PackageModule $mod)
+	{
+	    return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n".
+               "<bindings package=\"".$mod->getName()."\">\n".
+               "    <domain namespace=\"\">\n".
+               "    </domain>\n".
+               "</bindings>";
 	}
 	
 	/**
